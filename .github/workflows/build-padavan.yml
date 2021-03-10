@@ -107,15 +107,14 @@ jobs:
       if: always()
    
     - name: Generate release tag
-        id: tag
-        if: ${{ github.event_name != 'release' && success() }}
-        run: |
+      if: ${{ github.event_name != 'release' && success() }}
+      run: |
           echo "RELEASE_TAG=$(date +"%Y-%m-%d.%H%M")" >> $GITHUB_ENV
       
-      - name: Upload images to Releases
-        if: ${{ github.event_name != 'release' && success() }}
-        uses: svenstaro/upload-release-action@2.2.0
-        with:
+    - name: Upload images to Releases
+      if: ${{ github.event_name != 'release' && success() }}
+      uses: svenstaro/upload-release-action@2.2.0
+      with:
           release_name: K2P.K2 Padavan 🚀 | 自动编译 / ${{ env.RELEASE_TAG }}
           repo_token: ${{ secrets.RELEASE_TOKEN }}
           file: ${{ env.images_dir }}/*.trx
@@ -128,19 +127,19 @@ jobs:
           overwrite: true
           file_glob: true
     
-      - name: Delete workflow runs
-        uses: GitRML/delete-workflow-runs@main
-        with:
+    - name: Delete workflow runs
+      uses: GitRML/delete-workflow-runs@main
+      with:
          retain_days: 1
          keep_minimum_runs: 3
 
-      - name: Remove old Releases
-        uses: dev-drprasad/delete-older-releases@v0.1.0
-        if: ${{ github.event_name != 'release' && success() }}
-        with:
+    - name: Remove old Releases
+      uses: dev-drprasad/delete-older-releases@v0.1.0
+      if: ${{ github.event_name != 'release' && success() }}
+      with:
          keep_latest: 3
          delete_tags: true
-        env:
+      env:
          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
       with:
         name: Padavan-packages
