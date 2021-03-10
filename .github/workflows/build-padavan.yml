@@ -145,6 +145,3 @@ jobs:
          delete_tags: true
       env:
          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-        name: Padavan-packages
-        path: /opt/images
