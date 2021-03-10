@@ -105,8 +105,12 @@ jobs:
     - name : Upload packages
       uses: actions/upload-artifact@master
       if: always()
+      with:
+        name: Padavan-packages
+        path: /opt/images
    
     - name: Generate release tag
+      id: tag
       if: ${{ github.event_name != 'release' && success() }}
       run: |
           echo "RELEASE_TAG=$(date +"%Y-%m-%d.%H%M")" >> $GITHUB_ENV
@@ -141,6 +145,6 @@ jobs:
          delete_tags: true
       env:
          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-      with:
+         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         name: Padavan-packages
         path: /opt/images
