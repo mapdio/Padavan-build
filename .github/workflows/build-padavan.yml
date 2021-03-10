@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-18.04
     if: github.event.repository.owner.id == github.event.sender.id
     env:
-    images_dir: /opt/images
+      images_dir: /opt/images
     
     steps:
     - name: Checkout
