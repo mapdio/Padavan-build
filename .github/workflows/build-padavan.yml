@@ -20,6 +20,7 @@ jobs:
     runs-on: ubuntu-18.04
     if: github.event.repository.owner.id == github.event.sender.id
     env:
+      TZ: Asia/Shanghai
       images_dir: /opt/images
     
     steps:
