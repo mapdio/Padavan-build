@@ -2,6 +2,7 @@
 name: Build Padavan
 
 on: 
+  workflow_dispatch:
   release:
     types: [published]
   push:
@@ -18,7 +19,9 @@ jobs:
   build:
     runs-on: ubuntu-18.04
     if: github.event.repository.owner.id == github.event.sender.id
-
+  env:
+    images_dir: /opt/images
+    
     steps:
     - name: Checkout
       uses: actions/checkout@master
@@ -98,9 +101,47 @@ jobs:
         sudo ./clear_tree
         sudo ./build_firmware_modify $TNAME 0
         sudo mv -f images/*.trx /opt/images/
+  
     - name : Upload packages
       uses: actions/upload-artifact@master
       if: always()
+   
+    - name: Generate release tag
+        id: tag
+        if: ${{ github.event_name != 'release' && success() }}
+        run: |
+          echo "RELEASE_TAG=$(date +"%Y-%m-%d.%H%M")" >> $GITHUB_ENV
+      
+      - name: Upload images to Releases
+        if: ${{ github.event_name != 'release' && success() }}
+        uses: svenstaro/upload-release-action@2.2.0
+        with:
+          release_name: K2P.K2 Padavan 🚀 | 自动编译 / ${{ env.RELEASE_TAG }}
+          repo_token: ${{ secrets.RELEASE_TOKEN }}
+          file: ${{ env.images_dir }}/*.trx
+          tag: ${{ env.RELEASE_TAG }}
+          body: |   
+            1. 本固件为自动编译
+            2. 使用hanwckf的最新源码 https://github.com/hanwckf/rt-n56u
+            3. PSG12818-K2适配荒野无灯padavan固件网页升级
+            4. AP固件是极简配置，不含无关的自定义扩展，nano为hanwckf原config输出
+          overwrite: true
+          file_glob: true
+    
+      - name: Delete workflow runs
+        uses: GitRML/delete-workflow-runs@main
+        with:
+         retain_days: 1
+         keep_minimum_runs: 3
+
+      - name: Remove old Releases
+        uses: dev-drprasad/delete-older-releases@v0.1.0
+        if: ${{ github.event_name != 'release' && success() }}
+        with:
+         keep_latest: 3
+         delete_tags: true
+        env:
+         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
       with:
         name: Padavan-packages
         path: /opt/images
